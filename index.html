@@ -1,278 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- FIXED VIEWPORT - this is the main fix -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>basta na lang</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        hand: ["Gaegu", "cursive"],
-                        sans: ["Quicksand", "sans-serif"]
-                    },
-                    colors: {
-                        cozy: {
-                            50: "#fffbf5", 100: "#fef3e2", 200: "#fde5c2", 300: "#fccd96",
-                            400: "#f7ab62", 500: "#ea8832", 700: "#8c4815", 900: "#4a2509"
-                        }
-                    }
-                }
-            }
-        };
-    </script>
-
-    <style>
-        * { box-sizing: border-box; min-width: 0; }
-        html {
-            width: 100%;
-            margin: 0; padding: 0;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            -webkit-text-size-adjust: 100%;
-        }
-        body {
-            width: 100%;
-            min-height: 100dvh;
-            margin: 0; padding: 0;
-            overflow-x: hidden;
-        }
-        img, video, iframe { max-width: 100%; display: block; }
-        h1, h2, h3, p, span, blockquote { overflow-wrap: break-word; word-wrap: break-word; }
-        button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-
-        /* INTRO SCREEN - FIXED */
-        #introScreen {
-            position: fixed;
-            inset: 0;
-            width: 100%; /* was 100vw - this was causing tiny bug */
-            height: 100dvh;
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: linear-gradient(to bottom, #fff7ed, #fef0db, #fde2be);
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #introScreen.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-       .intro-box {
-            width: 100%;
-            max-width: 380px;
-            max-height: calc(100dvh - 30px);
-            overflow-y: auto;
-            background: rgba(255,255,255,0.97);
-            border: 2px solid #fde5c2;
-            border-radius: 28px;
-            padding: 30px 18px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(140,72,21,0.18);
-            animation: introAppear 0.8s ease;
-        }
-       .intro-capy { font-size: clamp(45px, 15vw, 75px); line-height: 1; margin-bottom: 12px; animation: introFloat 3s ease-in-out infinite; }
-       .intro-title { font-family: "Gaegu", cursive; font-size: clamp(32px, 10vw, 44px); font-weight: 700; line-height: 1; color: #4a2509; margin-bottom: 15px; }
-       .intro-text { font-family: "Quicksand", sans-serif; font-size: clamp(12px, 3.5vw, 14px); line-height: 1.7; color: #8c4815; margin-bottom: 22px; }
-        #startButton { border: none; background: #ea8832; color: white; font-family: "Quicksand", sans-serif; font-size: 15px; font-weight: 700; padding: 13px 32px; min-height: 48px; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 20px rgba(234,136,50,0.30); transition: transform 0.2s ease; }
-        #startButton:active { transform: scale(0.94); }
-        @keyframes introFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes introAppear { from { opacity: 0; transform: translateY(25px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* LAYOUT - FIXED TO BE 100% ON PHONE */
-       .mobile-header { width: 100%; max-width: 430px; margin: 8px auto; }
-       .intro-banner { width: 100%; max-width: 430px; margin: 8px auto 15px; }
-        #storyContainer {
-            width: 100%; max-width: 430px;
-            margin: 0 auto;
-            padding: 0 12px; /* a bit more padding */
-            display: flex; flex-direction: column; align-items: stretch; gap: 18px;
-        }
-       .mobile-card { width: 100%; padding: 18px 14px; border-radius: 24px; overflow: hidden; }
-       .mobile-quote { font-family: "Gaegu", cursive; font-size: clamp(23px, 7vw, 30px); font-weight: 700; line-height: 1.15; color: #4a2509; }
-       .mobile-description { font-family: "Quicksand", sans-serif; font-size: 11px; line-height: 1.55; color: #8c4815; }
-       .capy-photo-card { width: 100%; padding: 6px; background: white; border: 4px solid white; border-radius: 24px; overflow: hidden; box-shadow: 0 18px 35px -8px rgba(140,72,21,0.18); }
-       .photo-container { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 17px; background: #fff7ed; }
-       .photo-container img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.5s ease; }
-       .capy-photo-card:active.photo-container img { transform: scale(1.02); }
-       .final-card { width: 100%; padding: 20px 15px; margin-top: 5px; margin-bottom: 10px; border-radius: 25px; overflow: hidden; }
-       .final-title { font-family: "Gaegu", cursive; font-size: clamp(29px, 8vw, 38px); line-height: 1.1; font-weight: 700; }
-       .final-text { font-family: "Quicksand", sans-serif; font-size: 11px; line-height: 1.6; }
-       .mobile-footer { width: 100%; max-width: 430px; padding: 5px 15px 30px; text-align: center; margin: 0 auto; }
-
-        @media (max-width: 360px) {
-            #storyContainer { padding-left: 8px; padding-right: 8px; gap: 15px; }
-           .mobile-card { padding: 15px 11px; }
-           .mobile-quote { font-size: 22px; }
-           .mobile-description { font-size: 10px; }
-           .capy-photo-card { padding: 5px; border-width: 3px; }
-           .photo-container { border-radius: 14px; }
-           .intro-box { padding: 24px 14px; }
-        }
-        @media (min-width: 640px) {
-            #storyContainer,.mobile-header,.intro-banner,.mobile-footer { max-width: 500px; }
-           .photo-container { aspect-ratio: 4 / 3; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>basta na lang</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{fontFamily:{hand:["Gaegu","cursive"],sans:["Quicksand","sans-serif"]},colors:{cozy:{50:"#fffbf5",100:"#fef3e2",200:"#fde5c2",300:"#fccd96",400:"#f7ab62",500:"#ea8832",700:"#8c4815",900:"#4a2509"}}}}}
+</script>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100vw;margin:0;padding:0;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+img{max-width:100%}
+body{background:linear-gradient(to bottom,#fff7ed,#fef0db,#fde2be);font-family:Quicksand,sans-serif;color:#4a2509;}
+ 
+/* INTRO - fixed width */
+#introScreen{position:fixed;inset:0;width:100%;height:100dvh;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(to bottom,#fff7ed,#fef0db,#fde2be);transition:opacity .8s ease,visibility .8s ease}
+#introScreen.hide{opacity:0;visibility:hidden;pointer-events:none}
+.intro-box{width:100%;max-width:360px;background:rgba(255,255,255,.97);border:2px solid #fde5c2;border-radius:28px;padding:28px 18px;text-align:center;box-shadow:0 20px 50px rgba(140,72,21,.18)}
+.intro-capy{font-size:min(56px,9vw);line-height:1;margin-bottom:12px;max-width:100%;overflow:hidden;white-space:nowrap}
+.intro-title{font-family:Gaegu,cursive;font-size:38px;font-weight:700;line-height:1;color:#4a2509;margin-bottom:14px}
+.intro-text{font-size:13px;line-height:1.7;color:#8c4815;margin-bottom:20px}
+#startButton{border:none;background:#ea8832;color:#fff;font-family:Quicksand,sans-serif;font-size:15px;font-weight:700;padding:13px 32px;min-height:48px;border-radius:999px;cursor:pointer;box-shadow:0 8px 20px rgba(234,136,50,.3)}
+ 
+/* MAIN WRAPPER - this is the key, 100% on phone */
+.page-wrap{width:100%;max-width:430px;margin:0 auto;padding:0 12px 24px;display:flex;flex-direction:column;gap:16px}
+ 
+.mobile-header{width:100%;display:flex;align-items:center;background:rgba(255,251,245,.95);backdrop-filter:blur(12px);padding:10px 12px;border-radius:16px;border:1px solid rgba(253,229,194,.8);position:sticky;top:8px;z-index:40}
+.intro-banner{width:100%;padding:16px;border-radius:24px;background:rgba(255,255,255,.8);border:1px solid rgba(253,229,194,.8);backdrop-filter:blur(6px);text-align:center}
+ 
+.mobile-card{width:100%;padding:18px 14px;border-radius:24px;background:rgba(255,255,255,.95);border:2px solid #fef3e2;text-align:center;box-shadow:0 10px 25px -5px rgba(234,136,50,.12)}
+.mobile-quote{font-family:Gaegu,cursive;font-size:28px;font-weight:700;line-height:1.15;color:#4a2509}
+.mobile-description{font-size:11px;line-height:1.55;color:#8c4815;margin-top:8px}
+ 
+.capy-photo-card{width:100%;padding:6px;background:#fff;border:4px solid #fff;border-radius:24px;overflow:hidden;box-shadow:0 18px 35px -8px rgba(140,72,21,.18)}
+.photo-container{width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:17px;background:#fff7ed}
+.photo-container img{width:100%;height:100%;object-fit:cover;display:block}
+ 
+.final-card{width:100%;padding:20px 15px;border-radius:25px;background:rgba(255,255,255,.95);border:2px solid #fde5c2;text-align:center;box-shadow:0 15px 30px -5px rgba(234,136,50,.18)}
+.final-title{font-family:Gaegu,cursive;font-size:32px;font-weight:700;line-height:1.1}
+.final-text{font-size:11px;line-height:1.6;color:#8c4815;margin-top:8px}
+ 
+.mobile-footer{width:100%;text-align:center;padding:20px 0 30px;opacity:.8}
+</style>
 </head>
+<body>
+ 
+<div id="introScreen">
+<div class="intro-box">
+<div class="intro-capy">ദ്ദി ༎ຶ‿༎ຶ )</div>
+<h1 class="intro-title">open mo <br> basta open mo na lang</h1>
+<p class="intro-text">loveee <br> i made this little surprise 4 u. <br> i love you</p>
+<button id="startButton">start na</button>
+</div>
+</div>
+ 
+<audio id="backgroundMusic" loop preload="auto"><source src="music.mp3" type="audio/mpeg"></audio>
+ 
+<div class="page-wrap">
+<header class="mobile-header">
+<span style="font-size:22px;margin-right:8px">🍊</span>
+<div>
+<div style="font-family:Gaegu,cursive;font-size:20px;font-weight:700;color:#8c4815;line-height:1">Monthsary gift</div>
+<div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ea8832">4 u my love</div>
+</div>
+</header>
+ 
+<div class="intro-banner">
+<p style="font-family:Gaegu,cursive;font-size:20px;font-weight:700;color:#8c4815">Happy Monthsary Love</p>
+<p style="font-size:11px;color:#ea8832a6;margin-top:4px;line-height:1.5">hi love, i miss you. hindi ko pa kasi kaya yung mga expensive gifts kaya sa ngayon effort ko muna hehe... i love you so much reecacakes ko.</p>
+</div>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">I wanna make you smile whenever you're sad</blockquote><p class="mobile-description">im ur home now love, ako na ang sandalan mo sa lahat.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict1.png" alt="Photo 1"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Carry you around when your arthritis is bad</blockquote><p class="mobile-description">i wanna be the one who takes care of you when youre sick.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict2.png" alt="Photo 2"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote"> All I wanna do is grow old with you</blockquote><p class="mobile-description">ikaw ang pangarap ko na makasama sa habang buhay.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict3.png" alt="Photo 3"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">I'll get your medicine when your tummy aches</blockquote><p class="mobile-description">ako magpapainom sayo ng gamot o maghihilot sayo kapag masaki ang katawan mo</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict4.png" alt="Photo 4"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Build you a fire if the furnace breaks</blockquote><p class="mobile-description">yayakapin kita kapag nilalamig ka.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict5.png" alt="Photo 5"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">It could be so nice, growing old with you</blockquote><p class="mobile-description">i wanna spend the rest of my life with u reeca</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict6.png" alt="Photo 6"></div></section>
 
-<body class="bg-gradient-to-b from-[#fff7ed] via-[#fef0db] to-[#fde2be] text-cozy-900 min-h-screen flex flex-col items-center font-sans overflow-x-hidden">
 
-    <div id="introScreen">
-        <div class="intro-box">
-            <div class="intro-capy">ദ്ദि ༎ຶ‿༎ຶ )</div>
-            <h1 class="intro-title">open mo <br> basta open mo na lang</h1>
-            <p class="intro-text">loveee <br> i made this little surprise 4 u. <br> i love you</p>
-            <button id="startButton">start na</button>
-        </div>
-    </div>
-
-    <audio id="backgroundMusic" loop preload="auto"><source src="music.mp3" type="audio/mpeg"></audio>
-
-    <header class="mobile-header flex items-center bg-[#fff7ed]/95 backdrop-blur-md px-3 py-2.5 rounded-2xl border border-orange-200/60 shadow-sm sticky top-2 z-40">
-        <div class="flex items-center gap-2 min-w-0">
-            <span class="text-2xl flex-shrink-0">🍊</span>
-            <div class="min-w-0">
-                <span class="font-hand text-xl font-bold text-cozy-700 block leading-tight">Monthsary gift</span>
-                <span class="text- text-cozy-500 font-semibold uppercase tracking-wider">4 u my love</span>
-            </div>
-        </div>
-    </header>
-
-    <div class="intro-banner p-4 rounded-3xl bg-white/80 border border-orange-200/80 backdrop-blur-sm text-center shadow-sm z-10">
-        <p class="font-hand text-xl text-cozy-700 font-bold">Happy Monthsary Love</p>
-        <p class="text- text-cozy-500 mt-1 leading-relaxed">hi love, i miss you. hindi ko pa kasi kaya yung mga expensive gifts kaya sa ngayon effort ko muna hehe... i love you so much reecacakes ko.</p>
-    </div>
-
-    <main id="storyContainer">
-        <!-- copy all your sections here exactly as before -->
-        <!-- 1 -->
-        <section class="mobile-card bg-white/95 backdrop-blur-sm border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I wanna make you smile whenever you're sad</blockquote>
-            <p class="mobile-description mt-2">im ur home now love, ako na ang sandalan mo sa lahat.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict1.png" alt="Photo 1"></div></section>
-
-        <!-- 2 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I wanna be there when you need someone</blockquote>
-            <p class="mobile-description mt-2">nandito lang ako kapag kailangan mo ng kausap.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict2.png" alt="Photo 2"></div></section>
-
-        <!-- 3 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">All I want is to grow old beside you</blockquote>
-            <p class="mobile-description mt-2">ikaw ang gusto kong makasama habang tumatanda tayo.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict3.png" alt="Photo 3"></div></section>
-
-        <!-- 4 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I'll take care of you when you're not feeling well</blockquote>
-            <p class="mobile-description mt-2">gusto kong alagaan ka kapag hindi ka okay.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict4.png" alt="Photo 4"></div></section>
-
-        <!-- 5 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I'll keep you warm when you're cold</blockquote>
-            <p class="mobile-description mt-2">yayakapin kita kapag nilalamig ka.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict5.png" alt="Photo 5"></div></section>
-
-        <!-- 6 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I want to spend many more years with you</blockquote>
-            <p class="mobile-description mt-2">mamahalin kita habang tumatagal ang panahon.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict6.png" alt="Photo 6"></div></section>
-
-        <!-- 7 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I'll miss you whenever we're apart</blockquote>
-            <p class="mobile-description mt-2">miss na miss na kita my lovee.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict7.png" alt="Photo 7"></div></section>
-
-        <!-- 8 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I want to give you all the love I can</blockquote>
-            <p class="mobile-description mt-2">bibigyan kita ng maraming lambing at pagmamahal.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict8.png" alt="Photo 8"></div></section>
-
-        <!-- 9 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I'll always be here when you need me</blockquote>
-            <p class="mobile-description mt-2">hindi mo kailangang harapin lahat mag-isa.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict9.png" alt="Photo 9"></div></section>
-
-        <!-- 10 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I want to share simple moments with you</blockquote>
-            <p class="mobile-description mt-2">gusto kong kumain tayo sa labas kapag may cravings ka.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict10.png" alt="Photo 10"></div></section>
-
-        <!-- 11 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">You can choose what we watch together</blockquote>
-            <p class="mobile-description mt-2">ikaw ang masusunod buseng ko.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict11.png" alt="Photo 11"></div></section>
-
-        <!-- 12 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I want to share a home and little routines with you</blockquote>
-            <p class="mobile-description mt-2">ako ang maghuhugas ng pinggan at magluluto ng paborito mo.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict12.png" alt="Photo 12"></div></section>
-
-        <!-- 13 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I'll stay beside you through tiring days</blockquote>
-            <p class="mobile-description mt-2">aalagaan kita kapag pagod na pagod ka.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict13.png" alt="Photo 13"></div></section>
-
-        <!-- 14 -->
-        <section class="mobile-card bg-white/95 border-2 border-orange-100 shadow-[0_10px_25px_-5px_rgba(234,136,50,0.12)] text-center">
-            <blockquote class="mobile-quote">I want to keep choosing you every day</blockquote>
-            <p class="mobile-description mt-2">tutuparin natin yan dahil pangarap ko ang buhay kasama ka.</p>
-        </section>
-        <section class="capy-photo-card"><div class="photo-container"><img src="pict14.png" alt="Photo 14"></div></section>
-
-        <section class="final-card bg-white/95 backdrop-blur-md border-2 border-orange-200 shadow-[0_15px_30px_-5px_rgba(234,136,50,0.18)] text-center">
-            <h2 class="final-title text-cozy-900">Happy Monthsary Lovelove!</h2>
-            <p class="final-text text-cozy-700 mt-2">i miss you so much.. me so excited na magkita na ulit tayo. kinda nervous hahaha kasi baka hindi mo magustuhan yung bigay ko.... i love you so much love.</p>
-        </section>
-    </main>
-
-    <footer class="mobile-footer">
-        <p class="text-xs text-cozy-700/80">Sincerely yours</p>
-        <p class="text-xs text-cozy-700/80">gly poge</p>
-    </footer>
-
-    <script>
-        const startButton = document.getElementById("startButton");
-        const introScreen = document.getElementById("introScreen");
-        const backgroundMusic = document.getElementById("backgroundMusic");
-        backgroundMusic.volume = 0.5;
-        startButton.addEventListener("click", async function () {
-            try { await backgroundMusic.play(); } catch (error) { console.log("Music could not play:", error); }
-            introScreen.classList.add("hide");
-        });
-        document.querySelectorAll("img").forEach(function (image) {
-            image.addEventListener("dragstart", function (event) { event.preventDefault(); });
-        });
-    </script>
+    
+<section class="mobile-card"><blockquote class="mobile-quote">I'll miss you</blockquote><p class="mobile-description">miss na miss na kita my lovee.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict7.png" alt="Photo 7"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Kiss you</blockquote><p class="mobile-description">ikikiss kita nang madaming madami</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict8.png" alt="Photo 8"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Give you my coat when you are cold</blockquote><p class="mobile-description">magkukulong tayo sa kumot hahaha</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict9.png" alt="Photo 9"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Need you, Feed you</blockquote><p class="mobile-description">gusto kong kumain tayo sa labas pag may cravings ka.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict10.png" alt="Photo 10"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Even let you hold the remote control</blockquote><p class="mobile-description">ikaw ang masusunod buseng ko.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict11.png" alt="Photo 11"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">So let me do the dishes in our kitchen sink</blockquote><p class="mobile-description">ako ang maghuhugas ng pinggan at magluluto ng paborito mo.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict12.png" alt="Photo 12"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">Put you to bed when you've had so much to drink
+</blockquote><p class="mobile-description">ako ang magpapalit ng damit mo kapag...</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict13.png" alt="Photo 13"></div></section>
+ 
+<section class="mobile-card"><blockquote class="mobile-quote">I could be the man who grows old with you</blockquote><p class="mobile-description">tutuparin natin yan dahil pangarap ko ang buhay kasama ka.</p></section>
+<section class="capy-photo-card"><div class="photo-container"><img src="pict14.png" alt="Photo 14"></div></section>
+ 
+<section class="final-card">
+<h2 class="final-title">Happy Monthsary Lovelove!</h2>
+<p class="final-text">i miss you so much.. me so excited na magkita na ulit tayo. kinda nervous hahaha kasi baka hindi mo magustuhan yung bigay ko.... i love you so much love.</p>
+</section>
+ 
+<footer class="mobile-footer">
+<p style="font-size:12px">Sincerely yours</p>
+<p style="font-size:12px">gly poge</p>
+</footer>
+</div>
+ 
+<script>
+const startButton=document.getElementById("startButton");
+const introScreen=document.getElementById("introScreen");
+const backgroundMusic=document.getElementById("backgroundMusic");
+backgroundMusic.volume=0.5;
+startButton.addEventListener("click",async()=>{
+try{await backgroundMusic.play()}catch(e){console.log(e)}
+introScreen.classList.add("hide")
+});
+</script>
 </body>
 </html>
+ 
